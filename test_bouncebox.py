@@ -2,7 +2,7 @@
 
 import unittest
 import math
-from boule import Boule, CouleurBoule
+from boule import Boule, Boule_blanche, Boule_de_couleur, CouleurBoule
 from plateau import Plateau
 from joueur import Joueur
 from impact import Impact
@@ -15,7 +15,7 @@ class TestBoule(unittest.TestCase):
 
     def test_creation_boule(self):
         """Test la création d'une boule."""
-        boule = Boule(100, 200, CouleurBoule.BLANCHE)
+        boule = Boule_blanche(100, 200)
         self.assertEqual(boule.x, 100)
         self.assertEqual(boule.y, 200)
         self.assertEqual(boule.couleur, CouleurBoule.BLANCHE)
@@ -23,46 +23,46 @@ class TestBoule(unittest.TestCase):
 
     def test_deplacer_boule(self):
         """Test le déplacement d'une boule."""
-        boule = Boule(100, 100, CouleurBoule.ROUGE, vx=10, vy=20)
+        boule = Boule_de_couleur(100, 100, CouleurBoule.ROUGE, vx=10, vy=20)
         boule.deplacer(1.0)
         self.assertEqual(boule.x, 110)
         self.assertEqual(boule.y, 120)
 
     def test_arreter_boule(self):
         """Test l'arrêt d'une boule."""
-        boule = Boule(100, 100, CouleurBoule.BLANCHE, vx=10, vy=20)
+        boule = Boule_blanche(100, 100, vx=10, vy=20)
         boule.arreter()
         self.assertEqual(boule.vx, 0)
         self.assertEqual(boule.vy, 0)
 
     def test_est_arretee(self):
         """Test la détection d'une boule arrêtée."""
-        boule_en_mouvement = Boule(100, 100, CouleurBoule.BLANCHE, vx=10, vy=0)
+        boule_en_mouvement = Boule_blanche(100, 100, vx=10, vy=0)
         self.assertFalse(boule_en_mouvement.est_arrêtee())
 
-        boule_arretee = Boule(100, 100, CouleurBoule.BLANCHE, vx=0, vy=0)
+        boule_arretee = Boule_blanche(100, 100, vx=0, vy=0)
         self.assertTrue(boule_arretee.est_arrêtee())
 
     def test_changer_couleur(self):
         """Test le changement de couleur."""
-        boule = Boule(100, 100, CouleurBoule.GRISE)
+        boule = Boule_de_couleur(100, 100, CouleurBoule.GRISE)
         boule.changer_couleur(CouleurBoule.ROUGE)
         self.assertEqual(boule.couleur, CouleurBoule.ROUGE)
 
     def test_distance_entre_boules(self):
         """Test le calcul de distance entre deux boules."""
-        boule1 = Boule(0, 0, CouleurBoule.BLANCHE)
-        boule2 = Boule(3, 4, CouleurBoule.GRISE)
+        boule1 = Boule_blanche(0, 0)
+        boule2 = Boule_de_couleur(3, 4, CouleurBoule.GRISE)
         distance = boule1.distance_vers(boule2)
         self.assertAlmostEqual(distance, 5.0)
 
     def test_collision_entre_boules(self):
         """Test la détection de collision."""
-        boule1 = Boule(0, 0, CouleurBoule.BLANCHE, rayon=10)
-        boule2 = Boule(15, 0, CouleurBoule.GRISE, rayon=10)
+        boule1 = Boule_blanche(0, 0, rayon=10)
+        boule2 = Boule_de_couleur(15, 0, CouleurBoule.GRISE, rayon=10)
         self.assertTrue(boule1.entre_en_collision_avec(boule2))
 
-        boule3 = Boule(100, 0, CouleurBoule.GRISE, rayon=10)
+        boule3 = Boule_de_couleur(100, 0, CouleurBoule.GRISE, rayon=10)
         self.assertFalse(boule1.entre_en_collision_avec(boule3))
 
 
@@ -79,14 +79,14 @@ class TestPlateau(unittest.TestCase):
     def test_ajouter_boule(self):
         """Test l'ajout d'une boule."""
         plateau = Plateau()
-        boule = Boule(400, 300, CouleurBoule.BLANCHE)
+        boule = Boule_blanche(400, 300)
         plateau.ajouter_boule(boule)
         self.assertEqual(len(plateau.boules), 1)
 
     def test_retirer_boule(self):
         """Test le retrait d'une boule."""
         plateau = Plateau()
-        boule = Boule(400, 300, CouleurBoule.BLANCHE)
+        boule = Boule_blanche(400, 300)
         plateau.ajouter_boule(boule)
         plateau.retirer_boule(boule)
         self.assertEqual(len(plateau.boules), 0)
@@ -94,9 +94,9 @@ class TestPlateau(unittest.TestCase):
     def test_obtenir_boules_par_couleur(self):
         """Test la récupération de boules par couleur."""
         plateau = Plateau()
-        boule1 = Boule(100, 100, CouleurBoule.ROUGE)
-        boule2 = Boule(200, 200, CouleurBoule.ROUGE)
-        boule3 = Boule(300, 300, CouleurBoule.GRISE)
+        boule1 = Boule_de_couleur(100, 100, CouleurBoule.ROUGE)
+        boule2 = Boule_de_couleur(200, 200, CouleurBoule.ROUGE)
+        boule3 = Boule_de_couleur(300, 300, CouleurBoule.GRISE)
         plateau.ajouter_boule(boule1)
         plateau.ajouter_boule(boule2)
         plateau.ajouter_boule(boule3)
@@ -107,7 +107,7 @@ class TestPlateau(unittest.TestCase):
     def test_rebond_bordure_gauche(self):
         """Test le rebond sur la bordure gauche."""
         plateau = Plateau(800, 600)
-        boule = Boule(5, 300, CouleurBoule.BLANCHE, rayon=10, vx=-20, vy=0)
+        boule = Boule_blanche(5, 300, rayon=10, vx=-20, vy=0)
         plateau.ajouter_boule(boule)
         plateau.gerer_rebond_bordures()
         self.assertGreater(boule.vx, 0)  # La vitesse x doit être positive après rebond
@@ -115,7 +115,7 @@ class TestPlateau(unittest.TestCase):
     def test_rebond_bordure_droite(self):
         """Test le rebond sur la bordure droite."""
         plateau = Plateau(800, 600)
-        boule = Boule(795, 300, CouleurBoule.BLANCHE, rayon=10, vx=20, vy=0)
+        boule = Boule_blanche(795, 300, rayon=10, vx=20, vy=0)
         plateau.ajouter_boule(boule)
         plateau.gerer_rebond_bordures()
         self.assertLess(boule.vx, 0)  # La vitesse x doit être négative après rebond
@@ -166,14 +166,14 @@ class TestImpact(unittest.TestCase):
 
     def test_detecter_collision(self):
         """Test la détection de collision."""
-        boule1 = Boule(0, 0, CouleurBoule.BLANCHE, rayon=10)
-        boule2 = Boule(15, 0, CouleurBoule.GRISE, rayon=10)
+        boule1 = Boule_blanche(0, 0, rayon=10)
+        boule2 = Boule_de_couleur(15, 0, CouleurBoule.GRISE, rayon=10)
         self.assertTrue(Impact.detecter_collision(boule1, boule2))
 
     def test_appliquer_regle_couleur_grise(self):
         """Test l'application de la règle avec boule grise."""
-        boule_blanche = Boule(0, 0, CouleurBoule.BLANCHE)
-        boule_grise = Boule(20, 0, CouleurBoule.GRISE)
+        boule_blanche = Boule_blanche(0, 0)
+        boule_grise = Boule_de_couleur(20, 0, CouleurBoule.GRISE)
 
         resultat = Impact.appliquer_regle_couleur(boule_blanche, boule_grise, CouleurBoule.ROUGE)
         self.assertEqual(resultat, "gris")
@@ -181,16 +181,16 @@ class TestImpact(unittest.TestCase):
 
     def test_appliquer_regle_couleur_gagnee(self):
         """Test l'application de la règle avec boule gagnée."""
-        boule_blanche = Boule(0, 0, CouleurBoule.BLANCHE)
-        boule_rouge = Boule(20, 0, CouleurBoule.ROUGE)
+        boule_blanche = Boule_blanche(0, 0)
+        boule_rouge = Boule_de_couleur(20, 0, CouleurBoule.ROUGE)
 
         resultat = Impact.appliquer_regle_couleur(boule_blanche, boule_rouge, CouleurBoule.ROUGE)
         self.assertEqual(resultat, "gagne")
 
     def test_appliquer_regle_couleur_adverse(self):
         """Test l'application de la règle avec boule adverse."""
-        boule_blanche = Boule(0, 0, CouleurBoule.BLANCHE)
-        boule_bleue = Boule(20, 0, CouleurBoule.BLEUE)
+        boule_blanche = Boule_blanche(0, 0)
+        boule_bleue = Boule_de_couleur(20, 0, CouleurBoule.BLEUE)
 
         resultat = Impact.appliquer_regle_couleur(boule_blanche, boule_bleue, CouleurBoule.ROUGE)
         self.assertEqual(resultat, "adverse_grise")
@@ -227,20 +227,20 @@ class TestTrajectoire(unittest.TestCase):
 
     def test_creation_trajectoire(self):
         """Test la création d'une trajectoire."""
-        boule = Boule(100, 100, CouleurBoule.BLANCHE, vx=10, vy=0)
+        boule = Boule_blanche(100, 100, vx=10, vy=0)
         traj = Trajectoire(boule)
         self.assertEqual(traj.boule, boule)
 
     def test_obtenir_angle_actuel(self):
         """Test le calcul de l'angle."""
-        boule = Boule(100, 100, CouleurBoule.BLANCHE, vx=10, vy=0)
+        boule = Boule_blanche(100, 100, vx=10, vy=0)
         traj = Trajectoire(boule)
         angle = traj.obtenir_angle_actuel()
         self.assertAlmostEqual(angle, 0, delta=1)  # Environ 0°
 
     def test_obtenir_vitesse_actuelle(self):
         """Test le calcul de la vitesse."""
-        boule = Boule(100, 100, CouleurBoule.BLANCHE, vx=3, vy=4)
+        boule = Boule_blanche(100, 100, vx=3, vy=4)
         traj = Trajectoire(boule)
         vitesse = traj.obtenir_vitesse_actuelle()
         self.assertAlmostEqual(vitesse, 5.0)

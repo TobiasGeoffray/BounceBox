@@ -125,3 +125,64 @@ class Boule:
         """Représentation textuelle de la boule."""
         return f"Boule({self.couleur.value}, x={self.x:.1f}, y={self.y:.1f}, vx={self.vx:.1f}, vy={self.vy:.1f})"
 
+
+class Boule_blanche(Boule):
+    """
+    Représente la boule blanche du jeu BounceBox.
+
+    La boule blanche est toujours blanche et est utilisée pour frapper
+    les autres boules. Elle hérite de Boule.
+    """
+
+    def __init__(self, x, y, rayon=10, vx=0, vy=0, masse=1.0):
+        """
+        Initialise la boule blanche.
+
+        Args:
+            x (float): Position initiale x
+            y (float): Position initiale y
+            rayon (float): Rayon de la boule (par défaut 10)
+            vx (float): Vitesse initiale en x (par défaut 0)
+            vy (float): Vitesse initiale en y (par défaut 0)
+            masse (float): Masse de la boule (par défaut 1.0)
+        """
+        super().__init__(x, y, CouleurBoule.BLANCHE, rayon, vx, vy, masse)
+
+    def __repr__(self):
+        """Représentation textuelle de la boule blanche."""
+        return f"Boule_blanche(x={self.x:.1f}, y={self.y:.1f}, vx={self.vx:.1f}, vy={self.vy:.1f})"
+
+
+class Boule_de_couleur(Boule):
+    """
+    Représente une boule colorée du jeu BounceBox.
+
+    Les boules de couleur sont de couleur rouge, grise, bleue, etc.
+    Elles héritent de Boule.
+    """
+
+    def __init__(self, x, y, couleur, rayon=10, vx=0, vy=0, masse=1.0):
+        """
+        Initialise une boule colorée.
+
+        Args:
+            x (float): Position initiale x
+            y (float): Position initiale y
+            couleur (CouleurBoule): Couleur de la boule (ne doit pas être BLANCHE)
+            rayon (float): Rayon de la boule (par défaut 10)
+            vx (float): Vitesse initiale en x (par défaut 0)
+            vy (float): Vitesse initiale en y (par défaut 0)
+            masse (float): Masse de la boule (par défaut 1.0)
+
+        Raises:
+            ValueError: Si la couleur est BLANCHE
+        """
+        if couleur == CouleurBoule.BLANCHE:
+            raise ValueError("Une boule colorée ne peut pas être blanche. Utilisez Boule_blanche à la place.")
+        super().__init__(x, y, couleur, rayon, vx, vy, masse)
+
+    def __repr__(self):
+        """Représentation textuelle de la boule colorée."""
+        return f"Boule_de_couleur({self.couleur.value}, x={self.x:.1f}, y={self.y:.1f}, vx={self.vx:.1f}, vy={self.vy:.1f})"
+
+

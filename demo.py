@@ -3,7 +3,7 @@ Démonstration du moteur de jeu BounceBox - Étape 1
 Ce script teste et démontre toutes les classes du moteur.
 """
 
-from boule import Boule, CouleurBoule
+from boule import Boule, Boule_blanche, Boule_de_couleur, CouleurBoule
 from plateau import Plateau
 from joueur import Joueur
 from partie import Partie
@@ -17,8 +17,8 @@ def demo_boules():
     print("=" * 50)
 
     # Créer des boules
-    boule1 = Boule(100, 100, CouleurBoule.BLANCHE, vx=10, vy=0)
-    boule2 = Boule(120, 100, CouleurBoule.GRISE)
+    boule1 = Boule_blanche(100, 100, vx=10, vy=0)
+    boule2 = Boule_de_couleur(120, 100, CouleurBoule.GRISE)
 
     print(f"Boule 1 : {boule1}")
     print(f"Boule 2 : {boule2}")
@@ -49,8 +49,8 @@ def demo_plateau():
     print(f"Plateau créé : {plateau}")
 
     # Ajouter des boules
-    boule_blanche = Boule(400, 300, CouleurBoule.BLANCHE, rayon=10)
-    boule_grise = Boule(500, 300, CouleurBoule.GRISE, vx=5, vy=0)
+    boule_blanche = Boule_blanche(400, 300, rayon=10)
+    boule_grise = Boule_de_couleur(500, 300, CouleurBoule.GRISE, vx=5, vy=0)
     plateau.ajouter_boule(boule_blanche)
     plateau.ajouter_boule(boule_grise)
 
@@ -136,7 +136,7 @@ def demo_trajectoire():
     print("DÉMO 5 : Les Trajectoires")
     print("=" * 50)
 
-    boule = Boule(100, 100, CouleurBoule.BLANCHE, vx=30, vy=40)
+    boule = Boule_blanche(100, 100, vx=30, vy=40)
     trajectoire = Trajectoire(boule, enregistrer_historique=True)
 
     print(f"Boule : {boule}")

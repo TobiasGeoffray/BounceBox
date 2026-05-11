@@ -2,7 +2,7 @@
 
 from enum import Enum
 from typing import List, Tuple
-from boule import Boule, CouleurBoule
+from boule import Boule, Boule_blanche, Boule_de_couleur, CouleurBoule
 from plateau import Plateau
 from joueur import Joueur
 from impact import Impact
@@ -54,10 +54,9 @@ class Partie:
     def initialiser_boules(self):
         """Initialise les boules sur le plateau selon les règles du jeu."""
         # Ajout de la boule blanche au centre
-        boule_blanche = Boule(
+        boule_blanche = Boule_blanche(
             x=self.plateau.largeur / 2,
             y=self.plateau.hauteur / 2,
-            couleur=CouleurBoule.BLANCHE,
             rayon=10
         )
         self.plateau.ajouter_boule(boule_blanche)
@@ -66,14 +65,14 @@ class Partie:
         for i in range(9):
             x = random.uniform(50, self.plateau.largeur - 50)
             y = random.uniform(50, self.plateau.hauteur - 50)
-            boule_grise = Boule(x, y, CouleurBoule.GRISE, rayon=10)
+            boule_grise = Boule_de_couleur(x, y, CouleurBoule.GRISE, rayon=10)
             self.plateau.ajouter_boule(boule_grise)
 
         # Ajout de 2 boules bleues
         for i in range(2):
             x = random.uniform(50, self.plateau.largeur - 50)
             y = random.uniform(50, self.plateau.hauteur - 50)
-            boule_bleue = Boule(x, y, CouleurBoule.BLEUE, rayon=10)
+            boule_bleue = Boule_de_couleur(x, y, CouleurBoule.BLEUE, rayon=10)
             self.plateau.ajouter_boule(boule_bleue)
 
     def lancer_boule_blanche(self, angle_degres: float, force: float):
