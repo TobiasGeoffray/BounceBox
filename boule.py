@@ -1,51 +1,127 @@
-class Couleur:
-    def __init__(self,color_name):
-        self.list_color = ["white","blue","red"]
-        if color_name in list(self.list_color):
-            self.couleur = color_name
-        else :
-            raise ValueError('couleur non reconnue')
+"""Classe représentant une boule du jeu BounceBox."""
+
+from enum import Enum
+from math import sqrt
+
+
+class CouleurBoule(Enum):
+    """Énumération des couleurs possibles d'une boule."""
+    BLANCHE = "blanche"
+    GRISE = "grise"
+    ROUGE = "rouge"
+    BLEUE = "bleue"
+
 
 class Boule:
-    def __init__(self, x,y,couleur,rayon,vx,vy,masse):
+    """
+    Représente une boule du jeu BounceBox.
+
+    Attributs:
+        x (float): Position x de la boule
+        y (float): Position y de la boule
+        vx (float): Vitesse en x
+        vy (float): Vitesse en y
+        rayon (float): Rayon de la boule
+        couleur (CouleurBoule): Couleur de la boule
+        masse (float): Masse de la boule (par défaut 1.0)
+    """
+
+    def __init__(self, x, y, couleur, rayon=10, vx=0, vy=0, masse=1.0):
+        """
+        Initialise une boule.
+
+        Args:
+            x (float): Position initiale x
+            y (float): Position initiale y
+            couleur (CouleurBoule): Couleur de la boule
+            rayon (float): Rayon de la boule (par défaut 10)
+            vx (float): Vitesse initiale en x (par défaut 0)
+            vy (float): Vitesse initiale en y (par défaut 0)
+            masse (float): Masse de la boule (par défaut 1.0)
+        """
         self.x = x
         self.y = y
-        self.couleur = couleur
         self.vx = vx
         self.vy = vy
-        self.masse = masse
         self.rayon = rayon
+        self.couleur = couleur
+        self.masse = masse
 
-    def deplacer(self,dt):
-        self.x += self.vx*dt
-        self.y += self.vy*dt
+    def deplacer(self, dt):
+        """
+        Déplace la boule selon sa vitesse pendant un intervalle de temps.
 
-    def resistance(self,r):
-        self.vx *= -r
-        self.vy *= -r
+        Args:
+            dt (float): Intervalle de temps
+        """
+        self.x += self.vx * dt
+        self.y += self.vy * dt
 
-    def change_couleur(self,new_color):
-        if self.couleur == "white":
-            raise ValueError('La boule blanche ne peut pas changer de couleur')
-        else :
-            self.couleur = new_color
+    def appliquer_resistance(self, coefficient_resistance):
+        """
+        Applique une résistance (frottement) à la boule.
 
-    def arret(self,seuil):
-        v = (self.vx**2 + self.vy**2)**0.5
-        if v < seuil:
-            self.vx = 0
-            self.vy = 0
+        Args:
+            coefficient_resistance (float): Coefficient de résistance (entre 0 et 1)
+        """
+        self.vx *= coefficient_resistance
+        self.vy *= coefficient_resistance
 
-    def distance_interboule(self,boule2):
-        d = ((self.x - boule2.x)**2 + (self.y - boule2.y)**2)*0.5
-        return d
+    def arreter(self):
+        """Arrête complètement la boule."""
+        self.vx = 0
+        self.vy = 0
 
-    def collision(self,boule2):
-        d = self.distance_interboule(boule2)
-        return d <= self.rayon + boule2.rayon
+    def est_arrêtee(self, seuil=0.1):
+        """
+        Vérifie si la boule s'est arrêtée (vitesse très faible).
 
+        Args:
+            seuil (float): Seuil de vitesse considéré comme arrêtée
 
+        Returns:
+            bool: True si la boule est arrêtée
+        """
+        vitesse = sqrt(self.vx ** 2 + self.vy ** 2)
+        return vitesse < seuil
 
+    def changer_couleur(self, nouvelle_couleur):
+        """
+        Change la couleur de la boule.
 
+        Args:
+            nouvelle_couleur (CouleurBoule): Nouvelle couleur
+        """
+        self.couleur = nouvelle_couleur
 
+    def distance_vers(self, autre_boule):
+        """
+        Calcule la distance entre cette boule et une autre.
+
+        Args:
+            autre_boule (Boule): L'autre boule
+
+        Returns:
+            float: Distance entre les centres des deux boules
+        """
+        dx = self.x - autre_boule.x
+        dy = self.y - autre_boule.y
+        return sqrt(dx ** 2 + dy ** 2)
+
+    def entre_en_collision_avec(self, autre_boule):
+        """
+        Vérifie si cette boule entre en collision avec une autre.
+
+        Args:
+            autre_boule (Boule): L'autre boule
+
+        Returns:
+            bool: True si les boules se touchent
+        """
+        distance = self.distance_vers(autre_boule)
+        return distance <= (self.rayon + autre_boule.rayon)
+
+    def __repr__(self):
+        """Représentation textuelle de la boule."""
+        return f"Boule({self.couleur.value}, x={self.x:.1f}, y={self.y:.1f}, vx={self.vx:.1f}, vy={self.vy:.1f})"
 
