@@ -6,14 +6,14 @@ from main_window import MainWindow
 # test
 if __name__ == "__main__":
     # Vérifier si nous sommes dans un environnement graphique
-    if not os.environ.get('DISPLAY') and not os.environ.get('WAYLAND_DISPLAY'):
+    """if not os.environ.get('DISPLAY') and not os.environ.get('WAYLAND_DISPLAY'):
         print("❌ Aucun environnement graphique détecté (DISPLAY ou WAYLAND_DISPLAY)")
         print("💡 Essayez de lancer avec:")
         print("   export DISPLAY=:0")
         print("   export DISPLAY=:0")
 
         print("   ou utilisez un serveur X11/Wayland")
-        sys.exit(1)
+        sys.exit(1)"""
 
     try:
         app = QApplication(sys.argv)
