@@ -47,9 +47,9 @@ class Bot:
 
         # Tester tous les angles (pas de 5°)
         for angle in range(0, 360, self.pas_angle):
-            # Tester toutes les puissances (pas de 10%, de 10 à 100)
-            for puissance_pct in range(10, 101, self.pas_puissance):
-                force = puissance_pct / 10  # Convertir en force (1.0 * puissance_pct / 100 * 10)
+            # Tester toutes les puissances (pas de self.pas_puissance, de 10 à 300)
+            for puissance_pct in range(10, 301, self.pas_puissance):
+                force = puissance_pct  # Convertir en force (1.0 * puissance_pct / 100 * 10)
 
                 # Évaluer ce coup
                 score = self._evaluer_coup(plateau, angle, force)
