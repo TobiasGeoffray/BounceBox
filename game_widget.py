@@ -46,21 +46,33 @@ class GameWidget(QWidget):
             painter.setBrush(Qt.NoBrush)
             painter.drawEllipse(x, y, diam, diam)
 
-        # Guide de visée
-        if self.is_aiming and self.aim_current:
-            painter.setPen(QPen(QColor(255, 255, 0), 2, Qt.DashLine))
-            painter.drawLine(self.aim_start, self.aim_current)
+        # Afficher l'état du bot ou le guide de visée
+        partie = self.game_thread.get_partie()
+        if partie.joueur_actif.est_bot:
+            # Afficher un message d'attente du bot
+            painter.setFont(QFont('Arial', 14, QFont.Bold))
+            painter.setPen(QPen(QColor(255, 200, 0)))
+            painter.drawText(10, 50, f"🤖 {partie.joueur_actif.nom} réfléchit...")
+        else:
+            # Guide de visée pour le joueur humain
+            if self.is_aiming and self.aim_current:
+                painter.setPen(QPen(QColor(255, 255, 0), 2, Qt.DashLine))
+                painter.drawLine(self.aim_start, self.aim_current)
 
-            dist = math.sqrt((self.aim_current.x()-self.aim_start.x())**2 +
-                            (self.aim_current.y()-self.aim_start.y())**2)
-            angle = math.degrees(math.atan2(self.aim_current.y()-self.aim_start.y(),
-                                           self.aim_current.x()-self.aim_start.x()))
-            force = min(300, dist/150*300)
+                dist = math.sqrt((self.aim_current.x()-self.aim_start.x())**2 +
+                                (self.aim_current.y()-self.aim_start.y())**2)
+                angle = math.degrees(math.atan2(self.aim_current.y()-self.aim_start.y(),
+                                               self.aim_current.x()-self.aim_start.x()))
+                force = min(300, dist/150*300)
 
-            painter.setFont(QFont('Arial', 10))
-            painter.setPen(QPen(QColor(255, 255, 0)))
-            painter.drawText(10, 30, f"Angle: {angle:.0f}° | Force: {force:.0f}%")
+                painter.setFont(QFont('Arial', 10))
+                painter.setPen(QPen(QColor(255, 255, 0)))
+                painter.drawText(10, 30, f"Angle: {angle:.0f}° | Force: {force:.0f}%")
     def mousePressEvent(self, event):
+        # Ne pas permettre au joueur de viser si c'est le tour du bot
+        if self.game_thread.get_partie().joueur_actif.est_bot:
+            return
+
         if event.button() == Qt.LeftButton:
             plateau = self.game_thread.get_plateau()
             wb = plateau.obtenir_boule_blanche()

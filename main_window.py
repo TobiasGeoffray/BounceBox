@@ -3,6 +3,9 @@ from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLab
 from PyQt5.QtCore import Qt
 from game_thread import GameThread
 from game_widget import GameWidget
+from game_mode_dialog import GameModeDialog, SettingsDialog
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -10,13 +13,71 @@ class MainWindow(QMainWindow):
         self.setGeometry(100, 100, 1024, 700)
         self.game_thread = None
         self.game_widget = None
+        self.bot_settings = {'angle_step': 5, 'power_step': 10}
+
+        # Afficher le dialogue de sélection de mode
+        self.show_game_mode_dialog()
+    def show_game_mode_dialog(self):
+        """Affiche le dialogue de sélection du mode de jeu."""
+        dialog = GameModeDialog(self)
+        dialog.game_started.connect(self.on_game_mode_selected)
+        dialog.exec_()
+
+    def on_game_mode_selected(self, params):
+        """
+        Appelé quand l'utilisateur a sélectionné un mode de jeu.
+
+        Args:
+            params (dict): Paramètres de la partie
+                - player1_name: Nom du joueur 1
+                - player2_name: Nom du joueur 2
+                - points_to_win: Points pour gagner
+                - with_bot: True si c'est contre le bot
+        """
+        # Si c'est contre le bot, afficher les paramètres du bot
+        if params['with_bot']:
+            settings_dialog = SettingsDialog(self)
+            settings_dialog.settings_confirmed.connect(
+                lambda s: self.start_game(params, s)
+            )
+            settings_dialog.exec_()
+        else:
+            self.start_game(params, self.bot_settings)
+
+    def start_game(self, params, bot_settings=None):
+        """
+        Démarre une partie avec les paramètres donnés.
+
+        Args:
+            params (dict): Paramètres de la partie
+            bot_settings (dict): Paramètres du bot (si applicable)
+        """
+        if bot_settings:
+            self.bot_settings = bot_settings
+
+        # Créer le thread de jeu
+        self.game_thread = GameThread(
+            params['player1_name'],
+            params['player2_name'],
+            points_pour_gagner=params['points_to_win'],
+            avec_bot=params['with_bot']
+        )
+
+        # Configurer les paramètres du bot si nécessaire
+        if params['with_bot'] and self.game_thread.partie.joueur2.est_bot:
+            self.game_thread.partie.joueur2.bot.pas_angle = self.bot_settings['angle_step']
+            self.game_thread.partie.joueur2.bot.pas_puissance = self.bot_settings['power_step']
+
         self.setup_ui()
+
     def setup_ui(self):
+        """Configure l'interface utilisateur du jeu."""
         main_widget = QWidget()
         layout = QHBoxLayout()
+
         # Zone de jeu
-        self.game_thread = GameThread("Joueur 1", "Joueur 2")
         self.game_widget = GameWidget(self.game_thread)
+
         # Panneau droit
         right_layout = QVBoxLayout()
         # Labels
@@ -49,7 +110,8 @@ class MainWindow(QMainWindow):
         # Démarrer le jeu
         self.game_thread.start()
     def on_ball_launch(self, angle, force):
-        self.game_thread.lancer_boule_blanche(angle, force)
+        if self.game_thread:
+            self.game_thread.lancer_boule_blanche(angle, force)
     def on_scores_update(self, scores):
         self.label_score1.setText(f"{scores['joueur1']}: {scores['score1']}")
         self.label_score2.setText(f"{scores['joueur2']}: {scores['score2']}")
@@ -62,11 +124,16 @@ class MainWindow(QMainWindow):
         QMessageBox.information(self, "Partie Terminée", msg)
     def new_game(self):
         self.game_thread.stop_game()
-        self.game_thread.restart_game()
-    def quit_game(self):
-        self.game_thread.stop_game()
-        self.close()
-    def closeEvent(self, event):
-        self.game_thread.stop_game()
         self.game_thread.wait()
+        self.setCentralWidget(QWidget())  # Vider la fenêtre
+        self.show_game_mode_dialog()
+    def quit_game(self):
+        if self.game_thread:
+            self.game_thread.stop_game()
+        self.close()
+
+    def closeEvent(self, event):
+        if self.game_thread:
+            self.game_thread.stop_game()
+            self.game_thread.wait()
         event.accept()

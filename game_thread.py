@@ -31,22 +31,28 @@ class GameThread(QThread):
     game_over = pyqtSignal(str, int, int)  # Gagnant, score1, score2
     ball_launched = pyqtSignal()  # Boule lancée
 
-    def __init__(self, joueur1_nom="Joueur 1", joueur2_nom="Joueur 2"):
+    def __init__(self, joueur1_nom="Joueur 1", joueur2_nom="Joueur 2",
+                 points_pour_gagner=5, avec_bot=False):
         """
         Initialise le thread de jeu.
 
         Args:
             joueur1_nom (str): Nom du joueur 1 (rouge)
             joueur2_nom (str): Nom du joueur 2 (bleu)
+            points_pour_gagner (int): Points pour gagner (par défaut 5)
+            avec_bot (bool): True pour jouer contre le bot, False pour 2 joueurs (par défaut False)
         """
         super().__init__()
-        self.partie = Partie(joueur1_nom, joueur2_nom, points_pour_gagner=5)
+        self.partie = Partie(joueur1_nom, joueur2_nom,
+                            points_pour_gagner=points_pour_gagner,
+                            avec_bot=avec_bot)
         self.is_running = False
         self.is_paused = False
         self.fps_target = 60
         self.dt = 1.0 / self.fps_target
         self.current_angle = 0
         self.current_force = 0
+        self.bot_played = False  # Flag pour éviter de faire jouer le bot plusieurs fois
 
     def run(self):
         """
@@ -72,6 +78,9 @@ class GameThread(QThread):
 
                 # Mettre à jour la simulation
                 self.partie.mettre_a_jour_simulation(self.dt)
+
+                # Faire jouer le bot si c'est son tour
+                self._bot_play_if_needed()
 
                 # Émettre les signaux
                 self._emit_updates()
@@ -128,11 +137,38 @@ class GameThread(QThread):
             print(f"⏱️  {joueur_actif.nom} a dépassé le délai imparti !")
             self.partie.finir_tour()
             self._emit_player_changed()
+            self.bot_played = False  # Réinitialiser pour le nouveau tour
+
+    def _bot_play_if_needed(self):
+        """
+        Fait jouer le bot automatiquement si c'est son tour.
+        Cette méthode est appelée à chaque frame.
+        """
+        if (self.partie.etat == EtatPartie.TOUR and 
+            self.partie.joueur_actif.est_bot and 
+            not self.bot_played):
+            
+            print(f"🤖 {self.partie.joueur_actif.nom} est en train de calculer...")
+            
+            # Calculer et jouer le meilleur coup
+            angle, force = self.partie.joueur_actif.bot.calculer_meilleur_coup(self.partie.plateau)
+            
+            print(f"🤖 {self.partie.joueur_actif.nom} joue: angle={angle:.0f}°, force={force:.1f}")
+            
+            # Lancer la boule
+            self.lancer_boule_blanche(angle, force)
+            
+            # Marquer que le bot a joué
+            self.bot_played = True
 
     def _emit_player_changed(self):
         """Émet le signal de changement de joueur."""
         joueur = self.partie.joueur_actif
         couleur_str = "🔴 ROUGE" if joueur.couleur == CouleurBoule.ROUGE else "🔵 BLEU"
+        
+        # Réinitialiser le flag du bot quand le joueur change
+        self.bot_played = False
+        
         self.player_changed.emit(joueur.nom, couleur_str)
 
     def _emit_game_over(self):
