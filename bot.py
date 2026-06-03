@@ -59,6 +59,9 @@ class Bot:
                     meilleur_score = score
                     meilleur_angle = angle
                     meilleur_force = force
+                if score >= 5 :
+                    print('Très bon coup!! Pas besoin de chercher plus!')
+                    return meilleur_angle, meilleur_force
 
         return meilleur_angle, meilleur_force
 
@@ -144,7 +147,7 @@ class Bot:
         if boule_touchee.couleur == CouleurBoule.GRISE:
             return 1
         elif boule_touchee.couleur == self.couleur_joueur:
-            return 3
+            return 4
         elif boule_touchee.couleur in [CouleurBoule.ROUGE, CouleurBoule.BLEUE]:
             # Boule adverse
             return 2
