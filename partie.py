@@ -1,4 +1,4 @@
-"""Classe principale orchestrant une partie de BounceBox."""
+"""Classe principale orchestrant une partie de BounceBox (Version Fusionnée)."""
 
 from enum import Enum
 from typing import List, Tuple
@@ -53,8 +53,13 @@ class Partie:
         self.collisions_ce_tour: List[Tuple[Boule, Boule]] = []
         self.avec_bot = avec_bot
 
+        # 🚨 VOS COMPTEURS DE SUIVI (Initialisés dès le départ pour éviter les AttributeError)
+        self.numero_tour = 1
+        self.historique_tours = []
+        self.temps_total_partie = 0.0
+
     def initialiser_boules(self):
-        """Initialise les boules sur le plateau selon les règles du jeu."""
+        """Initialise les boules sur le plateau selon les règles du jeu (Modifications binôme)."""
         # Ajout de la boule blanche au centre
         boule_blanche = Boule_blanche(
             x=self.plateau.largeur / 2,
@@ -80,10 +85,6 @@ class Partie:
     def lancer_boule_blanche(self, angle_degres: float, force: float):
         """
         Lance la boule blanche avec un angle et une force donnés.
-
-        Args:
-            angle_degres (float): Angle de lancement en degrés (0 = droite, 90 = haut)
-            force (float): Force du lancement (détermine la vitesse initiale)
         """
         if self.etat != EtatPartie.TOUR:
             raise RuntimeError("Impossible de lancer : ce n'est pas le moment")
@@ -108,9 +109,6 @@ class Partie:
     def mettre_a_jour_simulation(self, dt=0.016):
         """
         Met à jour la simulation du jeu (déplacement, collisions, etc.).
-
-        Args:
-            dt (float): Intervalle de temps (par défaut ~60 FPS)
         """
         if self.etat == EtatPartie.ATTENTE:
             # Mettre à jour le plateau (déplacement, rebonds, résistance)
@@ -146,9 +144,36 @@ class Partie:
             self.finir_tour()
 
     def finir_tour(self):
-        """Termine le tour actuel et bascule au joueur suivant."""
+        """Termine le tour actuel, enregistre ses statistiques et bascule au joueur suivant."""
         if self.etat == EtatPartie.ATTENTE or self.etat == EtatPartie.TOUR:
-            # Changer de joueur
+
+            # ⏱️ Votre calcul du temps passé par le joueur pendant ce coup
+            temps_joue = 0.0
+            if hasattr(self.joueur_actif, 'temps_limite_tour') and hasattr(self.joueur_actif, 'temps_restant'):
+                temps_joue = self.joueur_actif.temps_limite_tour - self.joueur_actif.temps_restant
+
+            self.temps_total_partie += temps_joue
+
+            # 🎯 Nombre de points gagnés pendant ce tour
+            points_gagnes_ce_tour = len(self.boules_gagnees_ce_tour)
+
+            # Structuration et enregistrement des données du tour actuel
+            donnees_tour = {
+                "tour": self.numero_tour,
+                "joueur": self.joueur_actif.nom,
+                "couleur": self.joueur_actif.couleur.value if hasattr(self.joueur_actif.couleur, 'value') else str(
+                    self.joueur_actif.couleur),
+                "temps_coup": round(temps_joue, 1),
+                "points_gagnes": points_gagnes_ce_tour,
+                "score_actuel_j1": self.joueur1.score,
+                "score_actuel_j2": self.joueur2.score
+            }
+            self.historique_tours.append(donnees_tour)
+
+            # Passage au numéro de tour suivant
+            self.numero_tour += 1
+
+            # Changer de joueur (Logique binôme)
             self.joueur_actif = self.joueur2 if self.joueur_actif == self.joueur1 else self.joueur1
             self.joueur_actif.reactiver_timer()
             self.etat = EtatPartie.TOUR
@@ -157,7 +182,7 @@ class Partie:
 
     def executer_coup_bot(self):
         """
-        Exécute automatiquement le coup du bot si c'est son tour.
+        Exécute automatiquement le coup du bot si c'est son tour (Ajout binôme).
         Cette méthode doit être appelée à chaque frame quand c'est le tour du bot.
         """
         if self.etat != EtatPartie.TOUR or not self.joueur_actif.est_bot:
@@ -179,13 +204,13 @@ class Partie:
         self.joueur_actif = self.joueur1
         self.etat = EtatPartie.TOUR
 
-    def obtenir_etat_partie(self) -> dict:
-        """
-        Retourne l'état complet de la partie pour affichage/debug.
+        # 🚨 RÉINITIALISATION STRATEGIQUE DE VOS COMPTEURS POUR LA NOUVELLE PARTIE
+        self.numero_tour = 1
+        self.historique_tours = []
+        self.temps_total_partie = 0.0
 
-        Returns:
-            dict: Dictionnaire contenant l'état de la partie
-        """
+    def obtenir_etat_partie(self) -> dict:
+        """Retourne l'état complet de la partie pour affichage/debug."""
         return {
             "etat": self.etat.value,
             "joueur_actif": self.joueur_actif.nom,
@@ -198,3 +223,61 @@ class Partie:
         """Représentation textuelle de la partie."""
         return f"Partie({self.joueur1.nom} vs {self.joueur2.nom}, score {self.joueur1.score}-{self.joueur2.score})"
 
+    def sauvegarder_statistiques(self):
+        """
+        Votre méthode de sauvegarde du résumé et du suivi complet dans un fichier CSV.
+        """
+        # SÉCURITÉ : Si aucun coup n'a été enregistré (fermeture immédiate), on évite un fichier vide
+        if not hasattr(self, 'historique_tours') or not self.historique_tours:
+            print("⚠️ Aucun coup n'a été enregistré dans cette session, écriture CSV annulée.")
+            return
+
+        import csv
+        from datetime import datetime
+
+        nom_fichier = "suivi_parties_bouncebox.csv"
+
+        # Détermination du vainqueur
+        if self.joueur1.a_gagne(self.points_pour_gagner):
+            vainqueur = self.joueur1.nom
+        elif self.joueur2.a_gagne(self.points_pour_gagner):
+            vainqueur = self.joueur2.nom
+        else:
+            vainqueur = f"Interrompu (Score en cours: {self.joueur1.nom} {self.joueur1.score} - {self.joueur2.score} {self.joueur2.nom})"
+
+        # Écriture dans le fichier CSV
+        with open(nom_fichier, mode='a', newline='', encoding='utf-8') as fichier:
+            writer = csv.writer(fichier, delimiter=';')
+
+            writer.writerow([])
+            writer.writerow(["=================================================="])
+            writer.writerow([f"PARTIE DU {datetime.now().strftime('%d/%m/%Y à %H:%M')}"])
+            writer.writerow(["=================================================="])
+
+            # --- SECTION 1 : RÉSUMÉ GLOBAL ---
+            writer.writerow(["--- RESUME DE LA PARTIE ---"])
+            writer.writerow(["Joueur Rouge", self.joueur1.nom, "Score Final", self.joueur1.score])
+            writer.writerow(["Joueur Bleu", self.joueur2.nom, "Score Final", self.joueur2.score])
+            writer.writerow(["VAINQUEUR", vainqueur])
+            writer.writerow(["TEMPS TOTAL (s)", round(self.temps_total_partie, 1)])
+            writer.writerow([])
+
+            # --- SECTION 2 : SUIVI TOUR PAR TOUR ---
+            writer.writerow(["--- CHRONOLOGIE TOUR PAR TOUR ---"])
+            writer.writerow([
+                "Tour", "Joueur Actif", "Couleur", "Temps (s)",
+                "Bille(s) Gagnée(s) ce tour", "Total Rouge", "Total Bleu"
+            ])
+
+            for t in self.historique_tours:
+                writer.writerow([
+                    f"Tour {t['tour']}",
+                    t['joueur'],
+                    t['couleur'],
+                    t['temps_coup'],
+                    t['points_gagnes'],
+                    t['score_actuel_j1'],
+                    t['score_actuel_j2']
+                ])
+
+        print(f"📊 Suivi détaillé exporté avec succès dans '{nom_fichier}'")
