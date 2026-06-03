@@ -31,7 +31,7 @@ class Partie:
     """
 
     def __init__(self, nom_joueur1="Joueur 1", nom_joueur2="Joueur 2",
-                 points_pour_gagner=5, largeur_plateau=800, hauteur_plateau=600):
+                 points_pour_gagner=5, largeur_plateau=800, hauteur_plateau=600, avec_bot=False):
         """
         Initialise une partie.
 
@@ -41,15 +41,17 @@ class Partie:
             points_pour_gagner (int): Nombre de points pour gagner (par défaut 5)
             largeur_plateau (int): Largeur du plateau (par défaut 800)
             hauteur_plateau (int): Hauteur du plateau (par défaut 600)
+            avec_bot (bool): True pour jouer contre un bot, False pour 2 joueurs (par défaut False)
         """
         self.plateau = Plateau(largeur_plateau, hauteur_plateau)
         self.joueur1 = Joueur(nom_joueur1, CouleurBoule.ROUGE)
-        self.joueur2 = Joueur(nom_joueur2, CouleurBoule.BLEUE)
+        self.joueur2 = Joueur(nom_joueur2, CouleurBoule.BLEUE, est_bot=avec_bot)
         self.joueur_actif = self.joueur1  # Le rouge commence toujours
         self.etat = EtatPartie.DEBUT
         self.points_pour_gagner = points_pour_gagner
         self.boules_gagnees_ce_tour: List[Boule] = []
         self.collisions_ce_tour: List[Tuple[Boule, Boule]] = []
+        self.avec_bot = avec_bot
 
     def initialiser_boules(self):
         """Initialise les boules sur le plateau selon les règles du jeu."""
@@ -152,6 +154,22 @@ class Partie:
             self.etat = EtatPartie.TOUR
             self.boules_gagnees_ce_tour = []
             self.collisions_ce_tour = []
+
+    def executer_coup_bot(self):
+        """
+        Exécute automatiquement le coup du bot si c'est son tour.
+        Cette méthode doit être appelée à chaque frame quand c'est le tour du bot.
+        """
+        if self.etat != EtatPartie.TOUR or not self.joueur_actif.est_bot:
+            return False
+
+        # Le bot calcule son meilleur coup
+        angle, force = self.joueur_actif.bot.calculer_meilleur_coup(self.plateau)
+
+        # Lancer la boule blanche
+        self.lancer_boule_blanche(angle, force)
+
+        return True
 
     def demarrer_partie(self):
         """Démarre une nouvelle partie."""

@@ -13,9 +13,11 @@ class Joueur:
         score (int): Nombre de billes gagnées
         est_actif (bool): True si c'est le tour du joueur
         temps_limite_tour (float): Temps limite pour jouer un coup (en secondes)
+        est_bot (bool): True si le joueur est un bot automatisé
+        bot (Bot): Instance du bot (si est_bot=True)
     """
 
-    def __init__(self, nom: str, couleur: CouleurBoule, temps_limite_tour=45.0):
+    def __init__(self, nom: str, couleur: CouleurBoule, temps_limite_tour=45.0, est_bot=False):
         """
         Initialise un joueur.
 
@@ -23,6 +25,7 @@ class Joueur:
             nom (str): Nom du joueur
             couleur (CouleurBoule): Couleur du joueur (ROUGE ou BLEUE)
             temps_limite_tour (float): Temps limite pour jouer (par défaut 45 secondes)
+            est_bot (bool): True si le joueur est un bot (par défaut False)
         """
         if couleur not in [CouleurBoule.ROUGE, CouleurBoule.BLEUE]:
             raise ValueError("La couleur du joueur doit être ROUGE ou BLEUE")
@@ -33,6 +36,13 @@ class Joueur:
         self.est_actif = False
         self.temps_limite_tour = temps_limite_tour
         self.temps_restant = temps_limite_tour
+        self.est_bot = est_bot
+        self.bot = None
+
+        # Créer le bot si nécessaire
+        if est_bot:
+            from bot import Bot
+            self.bot = Bot(couleur)
 
     def ajouter_point(self):
         """Ajoute un point au score du joueur."""
