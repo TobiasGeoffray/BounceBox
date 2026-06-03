@@ -60,7 +60,7 @@ class Bot:
                     meilleur_angle = angle
                     meilleur_force = force
                 if score >= 5 :
-                    print('Très bon coup!! Pas besoin de chercher plus!')
+                    print('🎳 Très bon coup trouvé!! Pas besoin de chercher plus!')
                     return meilleur_angle, meilleur_force
 
         return meilleur_angle, meilleur_force

@@ -144,8 +144,11 @@ class GameThread(QThread):
         Fait jouer le bot automatiquement si c'est son tour.
         Cette méthode est appelée à chaque frame.
         """
-        if (self.partie.etat == EtatPartie.TOUR and 
-            self.partie.joueur_actif.est_bot and 
+        if (not self.partie.joueur_actif.est_bot and
+                self.bot_played):
+            self.bot_played = False
+
+        elif (self.partie.joueur_actif.est_bot and
             not self.bot_played):
             
             print(f"🤖 {self.partie.joueur_actif.nom} est en train de calculer...")
@@ -168,7 +171,7 @@ class GameThread(QThread):
         
         # Réinitialiser le flag du bot quand le joueur change
         self.bot_played = False
-        
+
         self.player_changed.emit(joueur.nom, couleur_str)
 
     def _emit_game_over(self):
