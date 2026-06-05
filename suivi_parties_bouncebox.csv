@@ -29,3 +29,84 @@ TEMPS TOTAL (s);22.6
 --- CHRONOLOGIE TOUR PAR TOUR ---
 Tour;Joueur Actif;Couleur;Temps (s);Bille(s) Gagnée(s) ce tour;Total Rouge;Total Bleu
 Tour 1;Joueur 1;rouge;22.6;0;0;0
+
+==================================================
+PARTIE DU 05/06/2026 à 20:51
+==================================================
+--- RESUME DE LA PARTIE ---
+Joueur Rouge;Joueur 1;Score Final;0
+Joueur Bleu;Bot IA;Score Final;0
+VAINQUEUR;Interrompu (Score en cours: Joueur 1 0 - 0 Bot IA)
+TEMPS TOTAL (s);20.7
+
+--- CHRONOLOGIE TOUR PAR TOUR ---
+Tour;Joueur Actif;Couleur;Temps (s);Bille(s) Gagnée(s) ce tour;Total Rouge;Total Bleu
+Tour 1;Joueur 1;rouge;20.7;0;0;0
+
+==================================================
+PARTIE DU 05/06/2026 à 21:04
+==================================================
+--- RESUME DE LA PARTIE ---
+Joueur Rouge;Joueur 1;Score Final;0
+Joueur Bleu;Bot IA;Score Final;1
+VAINQUEUR;Interrompu (Score en cours: Joueur 1 0 - 1 Bot IA)
+TEMPS TOTAL (s);19.0
+
+--- CHRONOLOGIE TOUR PAR TOUR ---
+Tour;Joueur Actif;Couleur;Temps (s);Bille(s) Gagnée(s) ce tour;Total Rouge;Total Bleu
+Tour 1;Joueur 1;rouge;19.0;0;0;0
+
+==================================================
+PARTIE DU 05/06/2026 à 21:07
+==================================================
+--- RESUME DE LA PARTIE ---
+Joueur Rouge;Joueur 1;Score Final;0
+Joueur Bleu;Bot IA;Score Final;3
+VAINQUEUR;Interrompu (Score en cours: Joueur 1 0 - 3 Bot IA)
+TEMPS TOTAL (s);147.6
+
+--- CHRONOLOGIE TOUR PAR TOUR ---
+Tour;Joueur Actif;Couleur;Temps (s);Bille(s) Gagnée(s) ce tour;Total Rouge;Total Bleu
+Tour 1;Joueur 1;rouge;17.0;0;0;0
+Tour 2;Bot IA;bleue;11.0;1;0;1
+Tour 3;Joueur 1;rouge;26.8;0;0;1
+Tour 4;Bot IA;bleue;11.2;1;0;2
+Tour 5;Joueur 1;rouge;51.1;0;0;2
+Tour 6;Bot IA;bleue;12.2;1;0;3
+Tour 7;Joueur 1;rouge;18.3;0;0;3
+
+==================================================
+PARTIE DU 05/06/2026 à 21:12
+==================================================
+--- RESUME DE LA PARTIE ---
+Joueur Rouge;Joueur 1;Score Final;0
+Joueur Bleu;Bot IA;Score Final;1
+VAINQUEUR;Interrompu (Score en cours: Joueur 1 0 - 1 Bot IA)
+TEMPS TOTAL (s);52.6
+
+--- CHRONOLOGIE TOUR PAR TOUR ---
+Tour;Joueur Actif;Couleur;Temps (s);Bille(s) Gagnée(s) ce tour;Total Rouge;Total Bleu
+Tour 1;Joueur 1;rouge;20.9;0;0;0
+Tour 2;Bot IA;bleue;12.1;1;0;1
+Tour 3;Joueur 1;rouge;19.6;0;0;1
+
+==================================================
+PARTIE DU 05/06/2026 à 21:22
+==================================================
+--- RESUME DE LA PARTIE ---
+Joueur Rouge;Joueur 1;Score Final;0
+Joueur Bleu;Bot IA;Score Final;2
+VAINQUEUR;Interrompu (Score en cours: Joueur 1 0 - 2 Bot IA)
+TEMPS TOTAL (s);156.8
+
+--- CHRONOLOGIE TOUR PAR TOUR ---
+Tour;Joueur Actif;Couleur;Temps (s);Bille(s) Gagnée(s) ce tour;Total Rouge;Total Bleu
+Tour 1;Joueur 1;rouge;24.4;0;0;0
+Tour 2;Bot IA;bleue;12.6;1;0;1
+Tour 3;Joueur 1;rouge;19.6;0;0;1
+Tour 4;Bot IA;bleue;12.3;1;0;2
+Tour 5;Joueur 1;rouge;19.9;0;0;2
+Tour 6;Bot IA;bleue;11.8;0;0;2
+Tour 7;Joueur 1;rouge;27.1;0;0;2
+Tour 8;Bot IA;bleue;13.2;0;0;2
+Tour 9;Joueur 1;rouge;15.9;0;0;2

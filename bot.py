@@ -31,6 +31,128 @@ class Bot:
         self.pas_angle = 5  # 5 degrés
         self.pas_puissance = 10  # 10% de puissance
 
+    def _construire_angles_valides(self, plateau: Plateau) -> List[int]:
+        """
+        Construit la liste des angles (degrés) qui peuvent atteindre au moins
+        une boule directement ou après un unique rebond (1 rebond autorisé)
+
+        Utilise la méthode des intervalles angulaires pour chaque boule et
+        ajoute aussi les intervalles des images réfléchies par rapport aux
+        quatre bordures (méthode image) afin de prendre en compte 1 rebond.
+        """
+        boule_blanche = plateau.obtenir_boule_blanche()
+        if not boule_blanche:
+            return []
+
+        A = int(360 // self.pas_angle)
+        marks = [0] * (A + 1)  # arbre de différence pour marquer intervalles
+        eps = 1e-9
+        two_pi = 2.0 * math.pi
+
+        def ang_to_index(angle_rad: float) -> int:
+            # normaliser en [0, 2pi)
+            a = angle_rad % two_pi
+            return int(math.floor((a * A) / two_pi))
+
+        def ajouter_intervalle(centre_rad: float, ouverture_rad: float):
+            start = ang_to_index(centre_rad - ouverture_rad)
+            end = ang_to_index(centre_rad + ouverture_rad)
+            if start <= end:
+                marks[start] += 1
+                marks[end + 1] -= 1
+            else:
+                # wrap-around
+                marks[start] += 1
+                marks[A] -= 1
+                marks[0] += 1
+                marks[end + 1] -= 1
+
+        # paramètres des bordures (pour images)
+        left_x = plateau.limite_gauche
+        right_x = plateau.limite_droite
+        top_y = plateau.limite_haut
+        bottom_y = plateau.limite_bas
+
+        px, py = boule_blanche.x, boule_blanche.y
+
+        for boule in plateau.boules:
+            if boule is None:
+                continue
+            if boule.couleur == CouleurBoule.BLANCHE:
+                continue
+
+            # Direct
+            vx = boule.x - px
+            vy = boule.y - py
+            d = math.hypot(vx, vy)
+            if d <= boule.rayon + eps:
+                # tout angle possible
+                marks[0] += 1
+                marks[A] -= 1
+            else:
+                ouverture = math.asin(min(1.0, boule.rayon / d))
+                centre = math.atan2(vy, vx)
+                ajouter_intervalle(centre, ouverture)
+
+            # Images pour 1 rebond: réfléchir la position de la boule par rapport
+            # à chaque bordure et ajouter son intervalle.
+            # Mur gauche
+            img_x = 2 * left_x - boule.x
+            img_y = boule.y
+            vx_img = img_x - px
+            vy_img = img_y - py
+            d_img = math.hypot(vx_img, vy_img)
+            if d_img > eps:
+                ouverture_img = math.asin(min(1.0, boule.rayon / d_img))
+                centre_img = math.atan2(vy_img, vx_img)
+                ajouter_intervalle(centre_img, ouverture_img)
+
+            # Mur droit
+            img_x = 2 * right_x - boule.x
+            img_y = boule.y
+            vx_img = img_x - px
+            vy_img = img_y - py
+            d_img = math.hypot(vx_img, vy_img)
+            if d_img > eps:
+                ouverture_img = math.asin(min(1.0, boule.rayon / d_img))
+                centre_img = math.atan2(vy_img, vx_img)
+                ajouter_intervalle(centre_img, ouverture_img)
+
+            # Mur haut
+            img_x = boule.x
+            img_y = 2 * top_y - boule.y
+            vx_img = img_x - px
+            vy_img = img_y - py
+            d_img = math.hypot(vx_img, vy_img)
+            if d_img > eps:
+                ouverture_img = math.asin(min(1.0, boule.rayon / d_img))
+                centre_img = math.atan2(vy_img, vx_img)
+                ajouter_intervalle(centre_img, ouverture_img)
+
+            # Mur bas
+            img_x = boule.x
+            img_y = 2 * bottom_y - boule.y
+            vx_img = img_x - px
+            vy_img = img_y - py
+            d_img = math.hypot(vx_img, vy_img)
+            if d_img > eps:
+                ouverture_img = math.asin(min(1.0, boule.rayon / d_img))
+                centre_img = math.atan2(vy_img, vx_img)
+                ajouter_intervalle(centre_img, ouverture_img)
+
+        # Construire la liste d'angles valides à partir des marks (préfix sum)
+        valid_angles: List[int] = []
+        s = 0
+        for i in range(A):
+            s += marks[i]
+            if s > 0:
+                angle_deg = int(i * self.pas_angle)
+                if angle_deg > 180 :
+                    angle_deg = angle_deg - 360
+                valid_angles.append(angle_deg)
+
+        return valid_angles
+
     def calculer_meilleur_coup(self, plateau: Plateau) -> Tuple[float, float]:
         """
         Calcule le meilleur coup à jouer selon l'algorithme min-max.
@@ -45,10 +167,20 @@ class Bot:
         meilleur_force = 10
         meilleur_score = -float('inf')
 
-        # Tester tous les angles (pas de 5°)
-        for angle in range(0, 360, self.pas_angle):
-            # Tester toutes les puissances (pas de self.pas_puissance, de 10 à 300)
-            for puissance_pct in range(10, 301, self.pas_puissance):
+        # Pré-filtrer les angles : ne garder que ceux qui peuvent atteindre
+        # une boule directement ou après un rebond (1 rebond autorisé)
+        angles_valides = self._construire_angles_valides(plateau)
+        print(angles_valides)
+        # Si le pré-filtre retire tout (cas rare), retomber sur tous les angles
+        if not angles_valides:
+            angles_iterable = range(0, 360, self.pas_angle)
+        else:
+            angles_iterable = angles_valides
+
+        # Tester tous les angles filtrés
+        for angle in angles_iterable:
+            # Tester toutes les puissances
+            for puissance_pct in range(self.pas_puissance, 301, self.pas_puissance):
                 force = puissance_pct  # Convertir en force (1.0 * puissance_pct / 100 * 10)
 
                 # Évaluer ce coup
@@ -59,7 +191,7 @@ class Bot:
                     meilleur_score = score
                     meilleur_angle = angle
                     meilleur_force = force
-                if score >= 5 :
+                if score >= 6 :
                     print('🎳 Très bon coup trouvé!! Pas besoin de chercher plus!')
                     return meilleur_angle, meilleur_force
 
