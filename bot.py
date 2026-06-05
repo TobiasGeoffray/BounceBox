@@ -170,7 +170,7 @@ class Bot:
         # Pré-filtrer les angles : ne garder que ceux qui peuvent atteindre
         # une boule directement ou après un rebond (1 rebond autorisé)
         angles_valides = self._construire_angles_valides(plateau)
-        print(angles_valides)
+        #print(angles_valides)
         # Si le pré-filtre retire tout (cas rare), retomber sur tous les angles
         if not angles_valides:
             angles_iterable = range(0, 360, self.pas_angle)
@@ -180,7 +180,7 @@ class Bot:
         # Tester tous les angles filtrés
         for angle in angles_iterable:
             # Tester toutes les puissances
-            for puissance_pct in range(self.pas_puissance, 301, self.pas_puissance):
+            for puissance_pct in range(self.pas_puissance, 501, self.pas_puissance):
                 force = puissance_pct  # Convertir en force (1.0 * puissance_pct / 100 * 10)
 
                 # Évaluer ce coup

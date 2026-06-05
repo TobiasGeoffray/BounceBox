@@ -240,7 +240,7 @@ class GameWidget(QWidget):
                                                         self.aim_start.x() - self.aim_current.x()))
 
             # Limite augmentée à 400 pour des coups plus puissants
-            self.force_actuelle = min(400, (dist / 200) * 400)
+            self.force_actuelle = min(500, (dist / 200) * 500)
             self.update()
 
     def mouseReleaseEvent(self, event):
