@@ -10,11 +10,11 @@ La fenêtre s'ouvrira et vous affichera l'écran de sélection du mode de jeu.
 
 ---
 
-## 🎯 Écran 1: Sélection du Mode de Jeu
+## 🎯 Écran 1 : Sélection du Mode de Jeu
 
 Vous verrez un dialogue avec deux options:
 
-### Option 1: **2 Joueurs Humains** ✅ (Par défaut)
+### Option 1 : **2 Joueurs Humains** ✅ (Par défaut)
 - Deux joueurs jouent l'un après l'autre
 - Joueur 1 (Rouge) commence
 - Joueur 2 (Bleu) joue après
@@ -26,7 +26,7 @@ Vous verrez un dialogue avec deux options:
 3. Réglez les points pour gagner
 4. Cliquez "Démarrer la Partie"
 
-### Option 2: **Jouer contre le Bot IA** 🤖
+### Option 2 : **Jouer contre le Bot IA** 🤖
 - Vous êtes Joueur 1 (Rouge)
 - Le Bot IA est Joueur 2 (Bleu)
 - Le bot joue automatiquement après vous
@@ -45,22 +45,21 @@ Vous verrez un dialogue avec deux options:
 
 **Précision des angles (par défaut: 5°)**
 - Plus petit = Plus difficile
-- 5° = Normal (60 angles × 10 puissances = 720 coups testés)
-- 2° = Difficile (180 angles × 10 puissances = 1800 coups testés)
-- 1° = Expert (360 angles × 10 puissances = 3600 coups testés)
+- 10° = Normal (36 angles)
+- 5° = Difficile (72 angles)
+- 2° = Expert (180 angles) ⚠️Temps de calcul long⚠️
 
 **Précision de la puissance (par défaut: 10%)**
 - Plus petit = Plus difficile
-- 10% = Normal (10, 20, 30...100%)
-- 5% = Difficile (5, 10, 15...100%)
-- 1% = Expert (1, 2, 3...100%)
+- 50% = Normal (50, 100, 150...300%)
+- 10% = Difficile (10, 20, 30...300%)
 
 ### Temps d'attente:
-- Normal (5°, 10%): 10-15 secondes
-- Difficile (2°, 10%): 30-50 secondes
-- Expert (1°, 1%): 5+ minutes
+- Normal (10°, 50%): 5 secondes
+- Difficile (5°, 10%): 30-50 secondes
+- Expert (2°, 10%): +2 minutes
 
-**Conseil:** Commencez en Normal (5°, 10%)!
+**Conseil:** Commencez en Normal (10°, 50%)!
 
 ---
 
@@ -105,17 +104,12 @@ Vous verrez un dialogue avec deux options:
 ## 📊 Système de Scoring
 
 À chaque coup, le joueur/bot essaie de marquer des points:
+Pour marquer un point il faut "coloré" une boule en la touchant avec la blanche, puis lorsqu'elle est de votre couleur retouchez la pour gagner un point.
 
-| Type de boule | Points gagnés |
-|---|---|
-| Boule grise | 1 point |
-| Boule adverse | 2 points |
-| Boule propre | 3 points |
-| Aucune boule | 0 point |
 
 **Exemple:**
-- Alice (rouge) tire et touche: 1 grise, 1 rouge = 1 + 3 = 4 points ✅
-- Bob (bleu) tire et touche: 1 bleue = 3 points ✅
+- Alice (rouge) tire et touche: 1 grise, 1 rouge => elle colore la grise et gagne un point avec la rouge
+- Bob (bleu) tire et touche: 1 bleue => il gagne un point
 
 ---
 
@@ -136,7 +130,7 @@ Quand un joueur atteint le nombre de points requis:
 
 1. **Il est intelligent** - Le bot choisit toujours le meilleur coup
    - Touche les boules si possible
-   - Préfère ses boules (3 pts)
+   - Préfère ses boules 
    - Évite les contacts dangereux
 
 2. **Il est prévisible** - Le bot ne regarde que le coup actuel
@@ -144,124 +138,14 @@ Quand un joueur atteint le nombre de points requis:
    - Vous pouvez utiliser ça à votre avantage!
 
 3. **L'attente est normale** - Le bot prend 10-15 secondes
-   - C'est le temps de calculer 720 coups
+   - C'est le temps de calculer 300 coups
    - Soyez patient! ☕
 
-4. **Vous CAN gagner** - Le bot n'est pas parfait
+4. **Vous pouvez gagner** - Le bot n'est pas parfait (loin de la)
    - Vous avez aussi 45 secondes
    - Vous pouvez prendre un temps pour réfléchir
    - La chance existe aussi!
 
 ---
-
-## ⌨️ Raccourcis
-
-- **Nouvelle Partie** - Bouton "Nouvelle Partie"
-- **Quitter** - Bouton "Quitter" ou Fermer la fenêtre
-- **Viser** - Cliquer et glisser sur la boule blanche
-
----
-
-## ❓ FAQ
-
-**Q: Pourquoi le bot met du temps?**
-A: Il teste 720 coups différents (72 angles × 10 puissances). C'est le temps normal.
-
-**Q: Le bot peut-il tricher?**
-A: Non! Il utilise exactement le même système que vous (même physique, même scoring).
-
-**Q: On peut jouer Bot vs Bot?**
-A: Pas actuellement. Vous êtes toujours le Joueur 1. À développer!
-
-**Q: Comment battre le bot?**
-A: Le bot est très bon au jeu. Bonne chance! 😄
-
-**Q: Le bot peut-il s'améliorer?**
-A: Oui! Les développeurs peuvent ajouter:
-- Look-ahead (prévoir plusieurs coups)
-- Apprentissage par renforcement
-- Alpha-beta pruning (calcul plus rapide)
-
-**Q: Pourquoi le bot est toujours bleu?**
-A: Parce que le Joueur 1 (rouge) commence, et les humains aiment commencer. À modifier si souhaité!
-
----
-
-## 🐛 Dépannage
-
-### La souris ne répond pas?
-- Vous êtes peut-être en attendant le bot
-- Attendez que le bot finisse son coup
-
-### La boule ne lance pas?
-- Cliquez directement sur la boule blanche (rayon ~50 pixels)
-- Glissez suffisamment loin (minimum 5 pixels)
-
-### Le jeu fige pendant 10-15 secondes?
-- C'est NORMAL si c'est le tour du bot
-- Le bot calcule les 720 meilleurs coups
-- Attendez qu'il finisse
-
-### L'interface est lente?
-- Fermez d'autres applications
-- Réduisez la précision du bot (augmentez les pas d'angle/puissance)
-
----
-
-## 📈 Modifie les Noms des Joueurs
-
-sur l'écran de sélection du mode:
-1. Cliquez dans le champ "Joueur 1 (ROUGE)"
-2. Tapez votre nom
-3. Même chose pour Joueur 2 (si 2 joueurs humains)
-
----
-
-## 🎮 Comments Fonctionne le Gameplay
-
-### Joueur Humain:
-```
-Frame 1: Vous cliquez sur la boule
-         ↓
-Frame 2-100: Vous glissez (guide visuel)
-             ↓
-Frame 101: Vous relâchez
-           ↓
-Frame 102-500: Simulation (boules en mouvement)
-               ↓
-Frame 501: Tour terminé
-           ↓
-Frame 502: C'est le tour du bot / autre joueur
-```
-
-### Bot:
-```
-Frame 1: C'est le tour du bot
-         ↓
-Frame 2-3000: Bot calcule (10-15 secondes)
-              ↓
-Frame 3001: Bot lance la boule
-            ↓
-Frame 3002-3500: Simulation (boules en mouvement)
-                 ↓
-Frame 3501: Tour terminé
-            ↓
-Frame 3502: C'est votre tour / autre joueur
-```
-
----
-
-## 🚀 Améliorations Futures
-
-- [ ] Bot vs Bot (2 bots qui jouent ensemble)
-- [ ] Configuration du bot en jeu (pas besoin de redémarrer)
-- [ ] Statistiques de partie
-- [ ] Sauvegarde des parties
-- [ ] Multijoueur en réseau
-- [ ] Sons et musique
-- [ ] Skins/Thèmes
-
----
-
 **Amusez-vous bien! 🎮🤖**
 

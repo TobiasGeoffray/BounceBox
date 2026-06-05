@@ -1,45 +1,3 @@
-# 🤖 SYSTÈME DE BOT IA - RÉSUMÉ COMPLET
-
-## ✅ Ce qui a été implémenté
-
-J'ai créé un système complet de Bot IA pour votre jeu BounceBox selon vos spécifications. Le bot peut jouer contre le joueur humain en utilisant un algorithme min-max intelligent.
-
----
-
-## 📁 Fichiers créés/modifiés
-
-### Nouveaux fichiers:
-
-1. **bot.py** (180 lignes)
-   - Classe `Bot` avec l'algorithme min-max complet
-   - Evaluation intelligente des coups
-   - Système de scoring personnalisé
-   - Simulation et scoring des collisions
-
-2. **test_bot.py** (126 lignes)
-   - Tests du bot et du système de scoring
-   - Vérification de la mécanique du jeu
-
-3. **demo_bot.py** (150 lignes)
-   - Démonstration interactive du bot
-   - Exemple d'utilisation complète
-
-4. **BOT_DOCUMENTATION.py** (233 lignes)
-   - Documentation complète du système
-   - Exemples d'utilisation
-   - Explications téchniques
-
-### Fichiers modifiés:
-
-1. **joueur.py**
-   - Ajout du flag `est_bot: bool`
-   - Création automatique d'une instance `Bot`
-
-2. **partie.py**
-   - Paramètre `avec_bot: bool` dans le constructeur
-   - Méthode `executer_coup_bot()` pour laisser le bot jouer
-
----
 
 ## 🎮 COMMENT UTILISER
 
@@ -77,8 +35,8 @@ Le bot utilise un algorithme **brute-force min-max** qui:
 
 1. **Teste TOUS les coups possibles:**
    - Angles: 0° à 360° avec pas de 5° = **72 angles**
-   - Puissances: 10% à 100% avec pas de 10% = **10 puissances**
-   - **Total: 720 coups évalués**
+   - Puissances: 50% à 300% avec pas de 50% = **6 puissances**
+   - **Total: 432 coups évalués**
 
 2. **Simule chaque coup:**
    - Place la boule blanche avec l'angle et la force
@@ -118,25 +76,24 @@ bot.pas_puissance = 5  # Plus petit = plus fort (plus lent)
 ## ⏱️ PERFORMANCE
 
 | Configuration | Coups | Temps typique |
-|---|---|---|
-| Par défaut | 720 | 10-15 sec |
-| Difficile | 3600 | 50-80 sec |
+|---|-------|---|
+| Par défaut | 432   | 10-15 sec |
+| Difficile | 3600  | 50-80 sec |
 | Maximum | 36000 | 8+ min |
 
 *Les temps dépendent du nombre de boules et de la configuration machine*
-
+* ⚠️ Il faut donc éviter de demander une performance trop élevé (temps de jeu :45s) ⚠️
 ---
 
 ## 📊 SYSTÈME DE SCORING DÉTAILLÉ
 
 ### Règles du scoring:
 
-| Type de boule | Points |
-|---|---|
-| Boule grise | 1 |
-| Boule adverse | 2 |
-| Boule propre | 3 |
-| Aucune collision | 0 |
+| Type de boule                             | Points |
+|-------------------------------------------|---|
+| Boule grise                               | 1 |
+| Boule adverse                             | 2 |
+| Boule de sa propre couleur (point marqué) | 3 |
 
 ### Stratégie du bot:
 
@@ -145,6 +102,10 @@ Le bot préfère dans cet ordre:
 2. Toucher une boule adverse (2 pts)
 3. Toucher une boule grise (1 pt)
 4. Ne rien toucher (0 pts)
+
+### Optimisation en cas de bon coups :
+
+S'il trouve un coups dont le score dépasse 5 il garde ce coup ce qui permet d'avoir un bot qui ne trouve pas forcément le meilleur coup mais un très bon coup.
 
 ---
 
