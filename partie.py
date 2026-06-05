@@ -281,3 +281,103 @@ class Partie:
                 ])
 
         print(f"📊 Suivi détaillé exporté avec succès dans '{nom_fichier}'")
+
+    def calculer_ligne_visee(self, angle_degres: float, force: float, rebonds_max=1) -> list:
+        """
+        Calcule de façon récursive la trajectoire prédictive de la boule blanche.
+        BRIDÉE À 1 SEUL REBOND MAXIMUM.
+
+        Retourne une liste de tuples (x, y) représentant les points de passage.
+        """
+        boule_blanche = self.plateau.obtenir_boule_blanche()
+        if not boule_blanche:
+            return []
+
+        import math
+        angle_radians = math.radians(angle_degres)
+
+        # Calcul des vecteurs de vitesse initiaux virtuels
+        vx = force * math.cos(angle_radians)
+        vy = force * math.sin(angle_radians)
+
+        # On initialise la liste avec la position de départ (la boule blanche)
+        points_trajectoire = [(boule_blanche.x, boule_blanche.y)]
+
+        return self._calculer_trajectoire_recursive(
+            boule_blanche.x, boule_blanche.y,
+            vx, vy,
+            rebonds_max,  # Vaut 1 par défaut
+            points_trajectoire
+        )
+
+    def _calculer_trajectoire_recursive(self, x, y, vx, vy, rebonds_restants, points) -> list:
+        """
+        Méthode privée récursive corrigée et blindée contre le crash 0xC0000409.
+        S'arrête strictement dès que le quota de rebonds (ici 1) est atteint.
+        """
+        # SÉCURITÉ 1 : Arrêt immédiat si le quota de rebond est atteint
+        if rebonds_restants <= 0:
+            return points
+
+        # SÉCURITÉ 2 : Si la vitesse est nulle ou quasi-nulle (inférieure à 0.1 pixel/s)
+        # On stoppe tout pour éviter les divisions aberrantes par des nombres minuscules
+        if abs(vx) < 0.1 and abs(vy) < 0.1:
+            return points
+
+        largeur = self.plateau.largeur
+        hauteur = self.plateau.hauteur
+        rayon = 10  # Rayon de la boule blanche
+
+        t_mur = float('inf')
+        mur_touche = None
+
+        # --- CALCUL DU TEMPS AVANT L'IMPACT SUR LES MURS ---
+        # On utilise un seuil de mouvement minimum (0.001) pour éviter les divisions par zéro
+        if vx < -0.001:
+            t = (rayon - x) / vx
+            if t > 0.01 and t < t_mur: t_mur, mur_touche = t, 'vertical'
+        elif vx > 0.001:
+            t = (largeur - rayon - x) / vx
+            if t > 0.01 and t < t_mur: t_mur, mur_touche = t, 'vertical'
+
+        if vy < -0.001:
+            t = (rayon - y) / vy
+            if t > 0.01 and t < t_mur: t_mur, mur_touche = t, 'horizontal'
+        elif vy > 0.001:
+            t = (hauteur - rayon - y) / vy
+            if t > 0.01 and t < t_mur: t_mur, mur_touche = t, 'horizontal'
+
+        # SÉCURITÉ 3 : Si la trajectoire est parallèle à un mur ou ne rencontre rien rapidement
+        if mur_touche is None or t_mur == float('inf') or t_mur > 2000:
+            # On prolonge proprement la ligne droite sur une distance fixe de sécurité
+            points.append((x + vx * 0.5, y + vy * 0.5))
+            return points
+
+        # --- ENREGISTREMENT DU POINT D'IMPACT ---
+        nouvel_x = x + vx * t_mur
+        nouvel_y = y + vy * t_mur
+        points.append((nouvel_x, nouvel_y))
+
+        # --- CALCUL DE LA VITESSE APRÈS LE REBOND ---
+        if mur_touche == 'vertical':
+            nouvelle_vx = -vx
+            nouvelle_vy = vy
+        else:
+            nouvelle_vx = vx
+            nouvelle_vy = -vy
+
+        # Amortissement de la bande (90% de l'énergie conservée)
+        nouvelle_vx *= 0.9
+        nouvelle_vy *= 0.9
+
+        # SÉCURITÉ 4 : On décale numériquement la bille du mur pour le cycle suivant
+        sec_x = nouvel_x + (nouvelle_vx * 0.02)
+        sec_y = nouvel_y + (nouvelle_vy * 0.02)
+
+        # Appel récursif (rebonds_restants passe à 0, assurant l'arrêt au début du prochain appel)
+        return self._calculer_trajectoire_recursive(
+            sec_x, sec_y,
+            nouvelle_vx, nouvelle_vy,
+            rebonds_restants - 1,
+            points
+        )
