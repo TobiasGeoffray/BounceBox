@@ -25,7 +25,7 @@ if __name__ == "__main__":
         window.show()
         print("✅ Fenêtre affichée")
 
-        print("🎮 Jeu BounceBox prêt ! Fermez la fenêtre pour quitter.")
+        print("Jeu BounceBox prêt ! Fermez la fenêtre pour quitter.")
         sys.exit(app.exec_())
 
     except Exception as e:
