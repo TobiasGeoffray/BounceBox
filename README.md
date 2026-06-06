@@ -120,7 +120,7 @@ Pour plus de détails téchniques, consultez `BOT_DOCUMENTATION.py` ou `GUIDE_GU
 
 ## 🐍 Dépendances
 
-- Python 3.x
+- Python 3.14
 - PyQt5 (interface graphique)
 
 ## 📚 Documentation supplémentaire
