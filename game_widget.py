@@ -55,7 +55,7 @@ class GameWidget(QWidget):
         current_x = start_x
         current_y = start_y
 
-        # Boucle pour calculer le nombre d'impacts successifs demandés
+        # Boucle pour calculer le nombre d'impacts successifs
         for _ in range(nb_rebonds):
             t_min = float('inf')
             type_impact = None
