@@ -53,7 +53,7 @@ class Partie:
         self.collisions_ce_tour: List[Tuple[Boule, Boule]] = []
         self.avec_bot = avec_bot
 
-        # 🚨 VOS COMPTEURS DE SUIVI (Initialisés dès le départ pour éviter les AttributeError)
+        # compteur de suivi
         self.numero_tour = 1
         self.historique_tours = []
         self.temps_total_partie = 0.0
@@ -147,14 +147,14 @@ class Partie:
         """Termine le tour actuel, enregistre ses statistiques et bascule au joueur suivant."""
         if self.etat == EtatPartie.ATTENTE or self.etat == EtatPartie.TOUR:
 
-            # ⏱️ Votre calcul du temps passé par le joueur pendant ce coup
+            # ⏱ Votre calcul du temps passé par le joueur pendant ce coup
             temps_joue = 0.0
             if hasattr(self.joueur_actif, 'temps_limite_tour') and hasattr(self.joueur_actif, 'temps_restant'):
                 temps_joue = self.joueur_actif.temps_limite_tour - self.joueur_actif.temps_restant
 
             self.temps_total_partie += temps_joue
 
-            # 🎯 Nombre de points gagnés pendant ce tour
+            #  Nombre de points gagnés pendant ce tour
             points_gagnes_ce_tour = len(self.boules_gagnees_ce_tour)
 
             # Structuration et enregistrement des données du tour actuel
@@ -204,7 +204,7 @@ class Partie:
         self.joueur_actif = self.joueur1
         self.etat = EtatPartie.TOUR
 
-        # 🚨 RÉINITIALISATION STRATEGIQUE DE VOS COMPTEURS POUR LA NOUVELLE PARTIE
+        # réinitialisation des compteurs pour la nouvelle partie
         self.numero_tour = 1
         self.historique_tours = []
         self.temps_total_partie = 0.0
