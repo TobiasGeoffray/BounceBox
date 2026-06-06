@@ -16,17 +16,11 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("BounceBox - Jeu de Billard")
         self.setObjectName("MainWindow")  # Nécessaire pour cibler précisément la fenêtre en CSS
-
-        # Dimensions de la fenêtre adaptées pour accueillir le bandeau supérieur confortablement
         self.setMinimumSize(1180, 820)
-
-        # --- CORRECTION ICI : On applique le jaune crème UNIQUEMENT à la fenêtre principale ---
         self.setStyleSheet("QMainWindow#MainWindow { background-color: #fffdf0; }")
-
         self.game_thread = None
         self.game_widget = None
         self.bot_settings = {'angle_step': 5, 'power_step': 10}
-
         # Afficher le dialogue de sélection de mode
         self.show_game_mode_dialog()
 
@@ -88,15 +82,11 @@ class MainWindow(QMainWindow):
         layout_titre = QVBoxLayout(cadre_titre)
         layout_titre.setAlignment(Qt.AlignCenter)  # Tout aligner au centre à l'intérieur
         layout_titre.setSpacing(4)
-
-        # Nom du Jeu (Noir)
         lbl_nom_jeu = QLabel("BOUNCE BOX")
         lbl_nom_jeu.setFont(QFont("Segoe UI", 26, QFont.Bold))
         lbl_nom_jeu.setStyleSheet("color: #000000; letter-spacing: 3px; background: transparent;")
         lbl_nom_jeu.setAlignment(Qt.AlignCenter)
         layout_titre.addWidget(lbl_nom_jeu)
-
-        # Crédits étudiants (Noir)
         lbl_credits = QLabel("Projet Informatique Fise 28 — Tobias Geoffray et Ugo Royer")
         lbl_credits.setFont(QFont("Segoe UI", 11, QFont.Medium))
         lbl_credits.setStyleSheet("color: #000000; background: transparent;")
@@ -105,13 +95,8 @@ class MainWindow(QMainWindow):
 
         # Ajout du bandeau tout en haut du layout principal
         layout_principal_vertical.addWidget(cadre_titre)
-
-        # =========================================================================
-        # 2. ZONE INFÉRIEURE : LAYOUT HORIZONTAL [ JEU (GAUCHE) | PANNEAU (DROITE) ]
-        # =========================================================================
         layout_contenu_horizontal = QHBoxLayout()
         layout_contenu_horizontal.setSpacing(30)
-
         # --- ZONE DE JEU (GAUCHE / CENTRÉ) ---
         layout_jeu_vertical = QVBoxLayout()
         layout_jeu_vertical.setAlignment(Qt.AlignCenter)
@@ -126,7 +111,7 @@ class MainWindow(QMainWindow):
         right_layout = QVBoxLayout()
         right_layout.setAlignment(Qt.AlignTop)
 
-        # Cadre des statistiques (Scoreboard adapté sur fond clair avec textes noirs)
+        # Cadre des statistiques de jeu
         self.cadre_score = QFrame()
         self.cadre_score.setObjectName("Scoreboard")
         self.cadre_score.setStyleSheet("""
