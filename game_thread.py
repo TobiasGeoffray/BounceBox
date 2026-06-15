@@ -67,6 +67,9 @@ class GameThread(QThread):
         clock = time.time()
 
         while self.is_running:
+            if getattr(self.partie, 'changement_detecte', False):
+                self._emit_player_changed()
+                self.partie.changement_detecte = False
             if not self.is_paused:
                 # Timing du jeu
                 current_time = time.time()
@@ -94,7 +97,7 @@ class GameThread(QThread):
             # Attendre pour obtenir ~60 FPS
             sleep_time = self.dt - (time.time() - clock)
             if sleep_time > 0:
-                time.sleep(sleep_time / 1000.0)
+                time.sleep(sleep_time)
 
     def _emit_initial_state(self):
         """Émet l'état initial du jeu après démarrage."""
