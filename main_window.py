@@ -226,18 +226,37 @@ class MainWindow(QMainWindow):
         self.label_score2.setText(f"🔵 {scores['joueur2']} : {scores['score2']} pts")
 
     def on_player_changed(self, nom, couleur):
-        self.label_player.setText(f"🎯 Tour : {nom} ({couleur})")
-
-        # Ajustement des bordures de couleur dynamique sur le fond clair (textes figés en noir)
-        if "ROUGE" in str(couleur).upper():
-            self.cadre_score.setStyleSheet(
-                "#Scoreboard { background-color: #e8e6d5; border: 2px solid #ff4444; border-radius: 15px; padding: 15px; } QLabel { color: #000000; background: transparent; }")
-        elif "BLEU" in str(couleur).upper():
-            self.cadre_score.setStyleSheet(
-                "#Scoreboard { background-color: #e8e6d5; border: 2px solid #33a3ff; border-radius: 15px; padding: 15px; } QLabel { color: #000000; background: transparent; }")
+        print(f"DEBUG: Mise à jour UI pour {nom}")
+        print(f"DEBUG: Signal reçu -> Nom: '{nom}', Couleur: '{couleur}'")
+        # 1. Mise à jour du texte
+        self.label_player.setText(f"🎯 Tour : {nom}")
+        self.label_player.repaint()
+        # 2. Définition de la couleur de bordure
+        couleur_str = str(couleur).upper()
+        if "ROUGE" in couleur_str:
+            border_color = "#ff4444"
+        elif "BLEU" in couleur_str:
+            border_color = "#33a3ff"
         else:
-            self.cadre_score.setStyleSheet(
-                "#Scoreboard { background-color: #e8e6d5; border: 2px solid #c7c5b5; border-radius: 15px; padding: 15px; } QLabel { color: #000000; background: transparent; }")
+            border_color = "#c7c5b5"
+
+        # 3. Application du style directement sur l'objet
+        # On ajoute 'qproperty-objectName' pour forcer la reconnaissance du sélecteur CSS
+        style = f"""
+            QFrame#Scoreboard {{
+                background-color: #e8e6d5;
+                border: 3px solid {border_color};
+                border-radius: 15px;
+                padding: 15px;
+            }}
+        """
+        self.cadre_score.setStyleSheet("background-color: white")
+
+        # 4. LE SECRET POUR QT :
+        # Si le cadre est dans un layout, il faut forcer le layout à se redessiner
+        self.cadre_score.update()
+        self.cadre_score.parentWidget().update()  # Redessine aussi le conteneur
+
 
     def on_timer_update(self, temps):
         self.label_timer.setText(f"⏱️ Temps restant : {temps:.1f}s")
