@@ -137,6 +137,7 @@ class Partie:
             # Vérifier si toutes les boules sont arrêtées
             elif all(boule.est_arrêtee() for boule in self.plateau.boules):
                 self.finir_tour()
+                print(f"DEBUG: Tour fini, joueur actif est maintenant {self.joueur_actif.nom}")
 
     def passer_tour_timeout(self):
         """Le joueur passe son tour car le temps est écoulé."""
@@ -176,9 +177,11 @@ class Partie:
             # Changer de joueur (Logique binôme)
             self.joueur_actif = self.joueur2 if self.joueur_actif == self.joueur1 else self.joueur1
             self.joueur_actif.reactiver_timer()
+            self.tour_a_change = True
             self.etat = EtatPartie.TOUR
             self.boules_gagnees_ce_tour = []
             self.collisions_ce_tour = []
+            self.changement_detecte = True
 
     def executer_coup_bot(self):
         """
